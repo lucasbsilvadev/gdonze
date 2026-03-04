@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* config simulação a4 */
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            -webkit-print-color-adjust: exact;
+        }
+
+        /* container base para todas as páginas */
+        .pagina {
+            position: relative;
+            width: 210mm;
+            height: 297mm;
+            page-break-after: always;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        /* imagens */
+        .capa { background-image: url('assets/onze/1.png'); }
+        .dados-1 { background-image: url('assets/onze/2.png'); }
+        .dados-2 { background-image: url('assets/onze/3.png'); }
+        .aceite { background-image: url('assets/onze/4.png'); }
+
+        /* estilo dos campos */
+        .campo, .campo-aceite {
+            position: absolute;
+            font-weight: bold;
+            display: flex;
+            /* background: rgba(255, 0, 0, 0.2);     descomente para debug de posicionamento */
+        }
+
+        .campo {
+            color: #000000;
+            text-align: center;
+            /* background: rgba(255, 0, 0, 0.2);     descomente para debug de posicionamento */
+            align-items: center;
+            justify-content: center;
+        }
+
+        .campo-aceite {
+            color: aqua;
+            /* background: rgba(255, 0, 0, 0.2);     descomente para debug de posicionamento */
+        }
+
+        .campo-assinatura {
+            color: #000000;
+            display: block;
+            text-align: center;
+            line-height: 1.2;
+            word-wrap: break-word;
+            position: absolute;
+            font-weight: bold;
+        }
+
+        /* --- página 2 --- */
+        
+        /* bandeira verde */
+        #verde-consumo { top: 410px; left: 25px; width: 140px; }
+        #verde-tarifa   { top: 410px; left: 165px; width: 120px; }
+        #verde-bandeira { top: 410px; left: 290px; width: 160px; }
+        #verde-valor    { top: 410px; left: 476px; width: 140px; }
+        #verde-desconto { top: 410px; left: 630px; width: 160px; } 
+        
+        #verde-econ-mes { top: 495px; left: 380px; width: 320px; font-size: 20pt; color: #27ae60; justify-content: center; }
+        #verde-econ-ano { top: 580px; left: 380px; width: 300px; font-size: 20pt; color: #27ae60; justify-content: center; }
+
+        /* bandeira amarela */
+        #amarela-consumo { top: 832px; left: 25px; width: 140px; }
+        #amarela-tarifa   { top: 832px; left: 165px; width: 140px; }
+        #amarela-bandeira { top: 832px; left: 290px; width: 170px; }
+        #amarela-valor    { top: 832px; left: 460px; width: 180px; }
+        #amarela-desconto { top: 832px; left: 630px; width: 160px; } 
+
+        #amarela-econ-mes { top: 930px; left: 300px; width: 400px; font-size: 20pt; color: #f1c40f; justify-content: center; }
+        #amarela-econ-ano { top: 1010px; left: 300px; width: 400px; font-size: 20pt; color: #f1c40f; justify-content: center; }
+
+        /* --- página 3 --- */
+
+        /* bandeira vermelha 1 */
+        #vermelha1-consumo { top: 405px; left: 0px; width: 180px; }
+        #vermelha1-tarifa   { top: 405px; left: 165px; width: 120px; }
+        #vermelha1-bandeira { top: 405px; left: 290px; width: 160px; }
+        #vermelha1-valor    { top: 405px; left: 476px; width: 140px; }
+        #vermelha1-desconto { top: 405px; left: 630px; width: 160px; } 
+
+        #vermelha1-econ-mes { top: 497px; left: 380px; width: 250px; font-size: 20pt; color: #e63922; justify-content: center; }
+        #vermelha1-econ-ano { top: 581px; left: 380px; width: 250px; font-size: 20pt; color: #e63922; justify-content: center; }
+
+        /* bandeira vermelha 2 */
+        #vermelha2-consumo { top: 825px; left: 25px; width: 140px; }
+        #vermelha2-tarifa   { top: 825px; left: 165px; width: 120px; }
+        #vermelha2-bandeira { top: 825px; left: 290px; width: 160px; }
+        #vermelha2-valor    { top: 825px; left: 476px; width: 140px; }
+        #vermelha2-desconto { top: 825px; left: 630px; width: 160px; } 
+
+        #vermelha2-econ-mes { top: 925px; left: 380px; width: 250px; font-size: 20pt; color: #c0392b; justify-content: center; }
+        #vermelha2-econ-ano { top: 1010px; left: 380px; width: 250px; font-size: 20pt; color: #c0392b; justify-content: center; }
+
+        /* --- condições e validade --- */
+        #txt-assinatura-cliente { top: 788px; left: 420px; width: 300px; font-size: 11pt; color: #000000; } 
+        #txt-validade { top: 445px; left: 435px; width: 250px; font-size: 20pt; } 
+        #custo-investimento { top: 335px; left: 435px; width: 150px; font-size: 20pt; } 
+        #txt-desconto { top: 227px; left: 630px; width: 150px; font-size: 20pt; } 
+    </style>
+</head>
+<body>
+
+    <div class="pagina capa"></div>
+
+    <div class="pagina dados-1">
+        <div id="verde-consumo" class="campo">{{ consumo }} kWh</div>
+        <div id="verde-tarifa" class="campo">{{ tarifa_verde }}</div>
+        <div id="verde-bandeira" class="campo">{{ bandeira_verde }}</div>
+        <div id="verde-valor" class="campo">{{ valor_verde }}</div>
+        <div id="verde-desconto" class="campo">{{ desconto_verde }}</div>
+        <div id="verde-econ-mes" class="campo">{{ economia_mensal }}</div>
+        <div id="verde-econ-ano" class="campo">{{ economia_anual }}</div> 
+
+        <div id="amarela-consumo" class="campo">{{ consumo_amar }} kWh</div>
+        <div id="amarela-tarifa" class="campo">{{ tarifa_amarela }}</div>
+        <div id="amarela-bandeira" class="campo">{{ valor_band_amar }}</div>
+        <div id="amarela-valor" class="campo">{{ valor_total_amar }}</div>
+        <div id="amarela-desconto" class="campo">{{ desconto_amar }}</div>
+        <div id="amarela-econ-mes" class="campo">{{ econ_mes_amar }}</div>
+        <div id="amarela-econ-ano" class="campo">{{ econ_ano_amar }}</div>
+    </div>
+
+    <div class="pagina dados-2">
+        <div id="vermelha1-consumo" class="campo">{{ consumo_ver1 }} kWh</div>
+        <div id="vermelha1-tarifa" class="campo">{{ tarifa_ver1 }}</div>
+        <div id="vermelha1-bandeira" class="campo">{{ bandeira_ver1 }}</div>
+        <div id="vermelha1-valor" class="campo">{{ valor_ver1 }}</div>
+        <div id="vermelha1-desconto" class="campo">{{ desconto_ver1 }}</div>
+        <div id="vermelha1-econ-mes" class="campo">{{ economia_mes1 }}</div>
+        <div id="vermelha1-econ-ano" class="campo">{{ economia_ano1 }}</div> 
+
+        <div id="vermelha2-consumo" class="campo">{{ consumo_ver2 }} kWh</div>
+        <div id="vermelha2-tarifa" class="campo">{{ tarifa_ver2 }}</div>
+        <div id="vermelha2-bandeira" class="campo">{{ bandeira_ver2 }}</div>
+        <div id="vermelha2-valor" class="campo">{{ valor_ver2 }}</div>
+        <div id="vermelha2-desconto" class="campo">{{ desconto_ver2 }}</div>
+        <div id="vermelha2-econ-mes" class="campo">{{ economia_mes2 }}</div>
+        <div id="vermelha2-econ-ano" class="campo">{{ economia_ano2 }}</div> 
+    </div>
+
+    <div class="pagina aceite">
+        <div id="txt-assinatura-cliente" class="campo-assinatura">{{ CLIENTE }}</div>
+        <div id="custo-investimento" class="campo-aceite">0%</div> 
+        <div id="txt-validade" class="campo-aceite">{{ prazo_contrato }}</div>
+        <div id="txt-desconto" class="campo-aceite">{{ desconto_geral }}%</div>
+    </div>
+
+</body>
+</html>

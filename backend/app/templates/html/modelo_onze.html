@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* config de impressão */
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            -webkit-print-color-adjust: exact;
+        }
+
+        /* container das paginas */
+        .pagina {
+            position: relative;
+            width: 210mm;
+            height: 297mm;
+            page-break-after: always; 
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        /* imagens */
+        .capa { background-image: url('assets/capa_modelo_onze.png'); }
+        .dados { background-image: url('assets/modelo_onze.png'); }
+
+        /* estilização dos campos */
+        .campo {
+            position: absolute;
+            color: #1d3557; 
+            font-weight: bold;
+            display: block;
+            text-align: center;
+            line-height: 1.1;
+            word-wrap: break-word;
+            /* background: rgba(255, 0, 0, 0.2);      */
+        }
+
+        /* posicionamento dos dados brutos */
+        #txt-relatorio-de { width: 210mm; top: 155px; left: 0px; font-weight: normal; font-size: 27pt; text-transform: uppercase; color: #003366; }
+        #txt-cliente { width: 210mm; top: 195px; left: 0; width: 100%; font-size: 20pt; color: #003366; padding: 0 25mm; box-sizing: border-box }
+
+        #val-consumo { top: 415px; left: 133px; width: 200px; font-size: 22pt; }
+        #val-compensado { top: 415px; left: 420px; width: 300px; font-size: 22pt; }
+
+        /* posicionamento dos dados processados */
+        .campo-valor { text-align: center; font-size: 18pt; }
+        
+        #val-bruto { top: 568px; color: #ffffff; width: 280px; left: 455px; } 
+        #val-economia { top: 670px; color: #ffffff; width: 280px; left: 455px; } 
+        #val-fio-b { top: 768px; width: 160px; color: #ffffff; width: 180px; left:510px; } 
+        #val-total { top: 928px; font-size: 20pt; color: #ffffff; width: 280px; left: 455px; } 
+    </style>
+</head>
+<body>
+    <div class="pagina capa"></div>
+
+    <div class="pagina dados">
+        <div id="txt-relatorio-de" class="campo">Relatório de {{ MES }}</div>
+        <div id="txt-cliente" class="campo">{{ CLIENTE }}</div>
+        
+        <div id="val-consumo" class="campo">{{ consumo }} kWh </div>
+        <div id="val-compensado" class="campo">{{ compensado }} kWh</div>
+        
+        <div id="val-bruto" class="campo campo-valor">{{ valor_bruto }}</div>
+        <div id="val-economia" class="campo campo-valor">{{ economia }}</div>
+        <div id="val-fio-b" class="campo campo-valor">{{ fio_b }}</div>
+        <div id="val-total" class="campo campo-valor">{{ valor_total }}</div>
+    </div>
+</body>
+</html>
