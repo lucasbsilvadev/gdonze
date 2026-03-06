@@ -7,21 +7,21 @@ cloudinary.config(cloudinary_url=CLOUDINARY_URL)
 
 class StorageService:
 
-    @staticmethod
-    def upload_proposta(file_path, dados):
-
+  @staticmethod
+    def upload_cobranca(file_path, dados):
         try:
-            # estrutura de pasta e nome do arquivo "Proposta Comercial - Onze/Petro - Cliente - Mês - Ano"
-            empresa = dados.get('empresa', 'ONZE')
-            cliente = dados.get('nome_cliente', 'Cliente').replace(" ", "_")
-            ano = dados.get('ano', '2026')
-            mes = dados.get('mes', 'MES').upper() 
-            
-            folder = f"PROPOSTAS_{empresa}/{cliente}/{ano}_{mes}"
-            
-            public_id = f"proposta_{dados.get('cliente_id')}_{ano}_{mes}".replace(" ", "_")
+            # sanitização
+            empresa = str(dados.get('empresa', 'ONZE')).replace(" ", "_")
+            ano = str(dados.get('ano', '2026'))
+            mes = str(dados.get('mes', 'MES')).upper().replace(" ", "_")
+            usina = str(dados.get('usina', 'SEM_USINA')).replace(" ", "_")
+            cliente = str(dados.get('nome_cliente', 'CLIENTE')).replace(" ", "_")
+            uc = str(dados.get('codigo_uc', 'SEM_UC')).replace(" ", "_")
 
-            print(f"DEBUG STORAGE: Iniciando upload para: {folder}/{public_id}") # remover em prod
+            # hierarquia de pastas
+            folder = f"COBRANCAS_{empresa}/{ano}/{mes}/{usina}/{cliente}/{uc}"
+            
+            public_id = f"RELATORIO_{cliente}_{uc}_{mes}_{ano}".replace(" ", "_")
 
             response = cloudinary.uploader.upload(
                 file_path,
@@ -29,15 +29,15 @@ class StorageService:
                 public_id=public_id,
                 resource_type="raw", 
                 use_filename=True,
-                unique_filename=False
+                unique_filename=False 
             )
             
-            print(f"Sucesso! Resposta: {response}")
             return response.get("secure_url")
 
         except Exception as e:
-            print(f"debug storage: erro no upload da proposta: {str(e)}")
+
             raise e
+            
     @staticmethod
     def upload_cobranca(file_path, dados):
     
@@ -46,8 +46,6 @@ class StorageService:
             folder = f"COBRANCAS_{dados.get('empresa')}/{dados.get('ano')}/{dados.get('mes').upper()}"
             
             public_id = f"relatorio_{dados.get('cliente_id')}_{dados.get('mes')}_{dados.get('ano')}".replace(" ", "_")
-
-            print(f"DEBUG: Tentando upload para pasta: {folder}") # remover em prod
 
             # upload
             response = cloudinary.uploader.upload(
@@ -59,9 +57,6 @@ class StorageService:
                 unique_filename=False 
             )
             
-            print(f"DEBUG: Resposta Cloudinary: {response}") # remover em prod 
-            
-            # retorna a URL segura
             return response.get("secure_url")
 
 
