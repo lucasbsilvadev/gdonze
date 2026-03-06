@@ -110,7 +110,7 @@ def gerar_pdf_proposta(dados):
     html_renderizado = env.get_template(template_nome).render(context)
 
     # salvamento
-    nome_arquivo = f"proposta_{dados.get('cliente_id')}_{empresa}.pdf"
+    nome_arquivo = f"proposta_{dados.get('cliente_nome')}_{empresa}.pdf"
     pdf_path = os.path.join(OUTPUT_DIR, nome_arquivo)
 
     HTML(string=html_renderizado, base_url=TEMPLATE_PROPOSTA_DIR).write_pdf(pdf_path, presentational_hints=True)
