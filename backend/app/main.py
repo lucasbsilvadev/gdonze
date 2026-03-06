@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
-# Core e Services
+# core e services
 from core.database import listar_clientes, salvar_registro_db
 from services.cobranca_service import gerar_pdf_relatorio
 from services.proposta_service import gerar_pdf_proposta
@@ -29,20 +29,20 @@ def api_listar_clientes(empresa: str):
 @app.post("/gerar-relatorio")
 async def api_gerar_relatorio(dados: dict):
     try:
-        # geração do pdf local
+        # geração do pdf local (agora recebe os novos dados via 'dados')
         pdf_path, valor_total = gerar_pdf_relatorio(dados)
 
-        # upload para o Cloudinary (Acoplamento do Storage)
-
+        # upload para o Cloudinary
         url_pdf_cloud = None
         try:
             url_pdf_cloud = StorageService.upload_cobranca(pdf_path, dados)
         except Exception as storage_err:
             logger.error(f"Erro no upload Cloudinary: {storage_err}")
 
-        # estruturação dos dados
+        # estruturação dos dados para o banco
         dados_db = {
             "cliente_id": dados.get("cliente_id"),
+            "codigo_uc_id": dados.get("codigo_uc_id"),
             "mes": dados.get("mes"),
             "ano": int(dados.get("ano")),
             "consumo": float(dados.get("consumo", 0)),
@@ -51,10 +51,11 @@ async def api_gerar_relatorio(dados: dict):
             "tarifa_aplicada": float(dados.get("tarifa", 0)),
             "desconto_aplicado": float(dados.get("desconto", 0)),
             "valor_fio_b": float(dados.get("fio_b", 0)),
-            "url_arquivo": url_pdf_cloud 
+            "url_arquivo": url_pdf_cloud,
+            "empresa": dados.get("empresa") 
         }
 
-        # registro no BD agora somente dos inputs
+        # registro no BD
         salvar_registro_db(dados_db)
 
         # devolve download 
