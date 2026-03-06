@@ -32,17 +32,16 @@ def calcular_valores_cobranca(dados: dict) -> dict:
     }
 
 def gerar_pdf_relatorio(dados: dict):
-    """
-    Responsabilidade única: Orquestrar a montagem do PDF.
-    Não sabe nada sobre Cloudinary ou Supabase.
-    """
+
     # cálculos
     valores = calcular_valores_cobranca(dados)
 
-    # contexto para o Jinja2
+    # contexto jinja2
     context = {
         'base_path': TEMPLATE_RELATORIO_DIR, 
         'CLIENTE': dados.get("nome_cliente"),
+        'USINA': dados.get("usina", "N/A"),          
+        'CODIGO_UC': dados.get("codigo_uc", "N/A"),   
         'MES': dados.get("mes", "").upper(),
         'ANO': dados.get("ano"),
         'consumo': valores["consumo_fmt"],
@@ -55,14 +54,17 @@ def gerar_pdf_relatorio(dados: dict):
         'desconto_label': valores["desconto_label"]
     }
 
-    # seleção do tempalte
+    # seleção do template
     template_nome = "modelo_onze.html" if dados.get("empresa") == "ONZE" else "modelo_petro.html"
     
     # renderização
     html_renderizado = env.get_template(template_nome).render(context)
     
-    # persistência local
-    nome_arquivo = f"relatorio_{dados.get('cliente_id')}_{dados.get('mes')}_{dados.get('ano')}.pdf".replace(" ", "_")
+    # persistência local 
+    # Ex: Relatorio_NomeCliente_UC_MES_ANO.pdf
+    cliente_slug = str(dados.get("nome_cliente", "CLIENTE")).replace(" ", "_")
+    uc_slug = str(dados.get("codigo_uc", "UC")).replace(" ", "_")
+    nome_arquivo = f"Relatorio_{cliente_slug}_{uc_slug}_{dados.get('mes')}_{dados.get('ano')}.pdf".replace(" ", "_")
     pdf_path = os.path.join(OUTPUT_DIR, nome_arquivo)
 
     # geração do pdf - weasyprint
